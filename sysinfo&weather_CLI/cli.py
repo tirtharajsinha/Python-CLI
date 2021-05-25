@@ -52,6 +52,7 @@ class System:
             if i not in self.ignore:
                 data = self.info[i].split(":", 1)
                 print(TRED + data[0] + " : " + TGREEN + data[-1] + ENDC)
+                time.sleep(.3)
 
     def sysinfo_extra(self):
         addmore = [25, 26, 27]
@@ -60,6 +61,7 @@ class System:
             if i in addmore:
                 data = self.info[i].split(":", 1)
                 print(TPURPLE + data[0] + " : " + TYELLOW + data[-1] + ENDC)
+                time.sleep(.3)
 
         netindex = -1
         for i in range(30, len(self.info)):
@@ -75,12 +77,13 @@ class System:
                     print(TCYAN + data[0].strip() + " : " + ENDC + data[-1])
                 else:
                     print(TCYAN + data[0].strip() + ENDC)
+                time.sleep(.3)
 
 
 class Weather:
     def __init__(self):
         self.baseurl = "http://api.openweathermap.org/data/2.5/weather?q="
-        self.weatherapi = "api key stored in private repo"
+        self.weatherapi = "8e44efb0ae84f237a5d93f5f4d629433"
 
     def fetchweather(self):
         place = input("Enter location : ")
@@ -99,19 +102,19 @@ class Weather:
             hum = data["main"]["humidity"]
             visi = data["visibility"]
             des = data["weather"][0]["description"]
-            time.sleep(1)
+            time.sleep(.5)
             print(TPURPLE+"city : "+ ENDC+ str(city)+","+str(country))
-            time.sleep(1)
+            time.sleep(.5)
             print(TPURPLE+"Temperature : "+ENDC + str(temp), "degree celcius")
-            time.sleep(1)
+            time.sleep(.5)
             print(TPURPLE+"Humidity : "+ENDC + str(hum), "%")
-            time.sleep(1)
+            time.sleep(.5)
             print(TPURPLE+"Visibility : "+ENDC + str(visi), "meteres")
-            time.sleep(1)
+            time.sleep(.5)
             print(TPURPLE+"Wind speed : "+ENDC + str(windspeed), "miles/h")
-            time.sleep(1)
+            time.sleep(.5)
             print(TPURPLE+"Pressure : " +ENDC+ str(pressure), "hPa")
-            time.sleep(1)
+            time.sleep(.5)
             print(TYELLOW+"Overall : "+ENDC + str(des))
             print("\n......... Data from https://openweathermap.org/\n")
 
