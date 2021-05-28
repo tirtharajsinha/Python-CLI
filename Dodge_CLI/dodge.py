@@ -5,11 +5,11 @@ import requests
 from sys import platform
 import os
 
-TGREEN = '\033[32m'
-TRED = '\033[31;2m'
-TCYAN = '\033[36m'
+TGREEN = '\033[32;1m'
+TRED = '\033[31;1m'
+TCYAN = '\033[36;1m'
 TPURPLE = '\033[35;1m'
-TYELLOW = '\033[33m'
+TYELLOW = '\033[33;1m'
 TBLUE = '\033[34;1m'
 ENDC = '\033[m'  # reset to the defaults
 
