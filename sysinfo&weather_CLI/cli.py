@@ -2,12 +2,14 @@ import time
 import subprocess
 import argparse
 import requests
+from sys import platform
 
 TGREEN = '\033[32m'
 TRED = '\033[31;2m'
 TCYAN = '\033[36;2m'
 TPURPLE = '\033[35m'
 TYELLOW = '\033[33m'
+TBLUE = '\033[34;1m'
 ENDC = '\033[m'  # reset to the defaults
 
 time.sleep(1)
@@ -29,7 +31,7 @@ microsoft = "" \
 
 
 # traverse the info
-class System:
+class WinSystem:
     def __init__(self):
         Id = subprocess.check_output(['systeminfo']).decode('utf-8').split('\n')
         Id = Id[1:-1]
@@ -51,7 +53,7 @@ class System:
         for i in range(27):
             if i not in self.ignore:
                 data = self.info[i].split(":", 1)
-                print(TRED + data[0] + " : " + TGREEN + data[-1] + ENDC)
+                print(TBLUE + data[0] + " : " + TGREEN + data[-1] + ENDC)
                 time.sleep(.3)
 
     def sysinfo_extra(self):
@@ -83,7 +85,7 @@ class System:
 class Weather:
     def __init__(self):
         self.baseurl = "http://api.openweathermap.org/data/2.5/weather?q="
-        self.weatherapi = "api key stored in private repo"
+        self.weatherapi = "8e44efb0ae84f237a5d93f5f4d629433"
 
     def fetchweather(self):
         place = input("Enter location : ")
@@ -91,33 +93,47 @@ class Weather:
         res = requests.get(url)
         data = res.json()
         if data["cod"] == 200:
-            print(TYELLOW+"city found"+ENDC)
+            print(TYELLOW + "city found" + ENDC)
             print("------------------------\n")
 
-            city=data["name"]
-            country=data["sys"]["country"]
-            windspeed=data["wind"]["speed"]
-            pressure=data["main"]["pressure"]
+            city = data["name"]
+            country = data["sys"]["country"]
+            windspeed = data["wind"]["speed"]
+            pressure = data["main"]["pressure"]
             temp = data["main"]["temp"]
             hum = data["main"]["humidity"]
             visi = data["visibility"]
             des = data["weather"][0]["description"]
             time.sleep(.5)
-            print(TPURPLE+"city : "+ ENDC+ str(city)+","+str(country))
+            print(TPURPLE + "city : " + ENDC + str(city) + "," + str(country))
             time.sleep(.5)
-            print(TPURPLE+"Temperature : "+ENDC + str(temp), "degree celcius")
+            print(TPURPLE + "Temperature : " + ENDC + str(temp), "degree celcius")
             time.sleep(.5)
-            print(TPURPLE+"Humidity : "+ENDC + str(hum), "%")
+            print(TPURPLE + "Humidity : " + ENDC + str(hum), "%")
             time.sleep(.5)
-            print(TPURPLE+"Visibility : "+ENDC + str(visi), "meteres")
+            print(TPURPLE + "Visibility : " + ENDC + str(visi), "meteres")
             time.sleep(.5)
-            print(TPURPLE+"Wind speed : "+ENDC + str(windspeed), "miles/h")
+            print(TPURPLE + "Wind speed : " + ENDC + str(windspeed), "miles/h")
             time.sleep(.5)
-            print(TPURPLE+"Pressure : " +ENDC+ str(pressure), "hPa")
+            print(TPURPLE + "Pressure : " + ENDC + str(pressure), "hPa")
             time.sleep(.5)
-            print(TYELLOW+"Overall : "+ENDC + str(des))
+            print(TYELLOW + "Overall : " + ENDC + str(des))
             print("\n......... Data from https://openweathermap.org/\n")
 
+
+def recognize_os(e=False):
+    if platform == "linux" or platform == "linux2":
+        print("sorry currently this feature doesn't effective on any other system than Windows")
+    elif platform == "darwin":
+        print("sorry currently this feature doesn't effective on any other system than Windows")
+    elif platform == "win32":
+        if e:
+           WinSystem().sysinfo_extra()
+        else:
+            WinSystem().sysinfo()
+
+
+# Windows...
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -126,8 +142,10 @@ if __name__ == "__main__":
     parser.add_argument("-w", "--weather", action="store_true", help="Fetch weather report")
     args = parser.parse_args()
     if args.system:
-        System().sysinfo()
+        recognize_os()
     elif args.extra:
-        System().sysinfo_extra()
+        recognize_os(e=True)
     elif args.weather:
         Weather().fetchweather()
+    else:
+        print("No instruction found,\nTry 'cli.exe -h' for more info.")
