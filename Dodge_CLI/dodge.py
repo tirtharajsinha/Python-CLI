@@ -13,50 +13,40 @@ TYELLOW = '\033[33;1m'
 TBLUE = '\033[34;1m'
 ENDC = '\033[m'  # reset to the defaults
 
-time.sleep(1)
-microsoft = "            ,-~¨^  ^¨-,           _," \
-            "\n           //////////// ;^-._...,¨/ " \
-            "\n          //////////// ///////////  " \
-            "\n         //////////// ///////////   " \
-            "\n        //////////// ///////////    " \
-            "\n       /,.-:''-,_ / ///////////     " \
-            "\n       _,.-:--._ ^ ^:-._ __../      " \
-            "\n     //////////// /¨:.._¨__.;       " \
-            "\n    //////////// ///////////        " \
-            "\n   //////////// ///////////         " \
-            "\n  //////////// ///////////          " \
-            "\n /_,.--:^-._/ ///////////           " \
-            "\n^            ^¨¨-.___.:^            "
 
-elementary = "" \
-             "         eeeeeeeeeeeeeeeee           " \
-             "\n      eeeeeeeeeeeeeeeeeeeeeee      " \
-             "\n    eeeee  eeeeeeeeeeee   eeeee    " \
-             "\n  eeee   eeeee       eee     eeee  " \
-             "\n eeee   eeee          eee     eeee " \
-             "\neeee    eee            eee      eee" \
-             "\neee   eee            eee        eee" \
-             "\nee    eee           eeee       eeee" \
-             "\nee    eee         eeeee      eeeeee" \
-             "\nee    eee       eeeee      eeeee ee" \
-             "\neee   eeee   eeeeee      eeeee  eee" \
-             "\neee    eeeeeeeeee     eeeeee    eee" \
-             "\n eeeeeeeeeeeeeeeeeeeeeeee    eeeee " \
-             "\n  eeeeeeee eeeeeeeeeeee      eeee  " \
-             "\n    eeeee                 eeeee    " \
-             "\n      eeeeeee         eeeeeee      " \
-             "\n         eeeeeeeeeeeeeeeee         "
+
+
 
 f = open("ascii_art.txt", "r")
 content = f.readlines()
-win = content[1:14]
-ele = content[16:33]
+
+logo_pos={
+    "win":[1,14],
+    "elementary":[16,33]
+}
+
+
+def equalizer(list):
+    ele=[]
+    for i in list:
+        i=i.replace("\n"," ")
+        ele.append(i)
+    maxart = len(max(ele, key=len))
+
+    for i in range(len(ele)):
+        
+        if len(ele[i])<maxart:
+            ele[i]+=" "*(maxart-len(ele[i]))
+    
+    return ele
+
 
 
 # traverse the info
 class WinSystem:
     def __init__(self):
-        Id = subprocess.check_output(['systeminfo']).decode('utf-8').split('\n')
+        Id = subprocess.check_output(
+            ['systeminfo']).decode('utf-8').split('\n')
         Id = Id[1:-1]
         new = []
 
@@ -73,6 +63,8 @@ class WinSystem:
 
         self.ignore = [4, 5, 7, 8, 9, 10, 11, 16, 17, 18, 19, 21, 25, 26, 27]
         artcounter = 0
+        pos=logo_pos["win"]
+        win=content[pos[0]:pos[1]]
         for i in range(27):
 
             if i not in self.ignore:
@@ -128,7 +120,7 @@ class lnx_info:
         kernal = osinfo[6].split(": ")
         architecture = osinfo[7].split(": ")
 
-        infodic["host"] = host[1].strip()
+        infodic["Host"] = host[1].strip()
         infodic["OS"] = osname[1].strip()
         infodic["Kernal"] = kernal[1].strip()
         infodic["Architecture"] = architecture[1].strip()
@@ -168,7 +160,7 @@ class lnx_info:
             free_size = free_blocks * block_size / giga
             used_size = total_size - free_size
             infodic["Disk space"] = str(round(used_size, 2)) + \
-                                    " GiB /" + str(round(total_size, 2)) + " GiB"
+                " GiB /" + str(round(total_size, 2)) + " GiB"
         except:
             pass
 
@@ -197,14 +189,27 @@ class lnx_info:
         self.info = infodic
 
     def display(self):
+        print()
+        keys = list(self.info.keys())
         if "elementary" in self.info["OS"]:
-            print(TBLUE + elementary + ENDC, "\n")
-        print(("<" * 7) + ("-" * 6) + (">" * 7))
-        print(TPURPLE + self.info["host"] + ENDC + "\n" + ("-" * 20))
-        keys = list(self.info.keys())[1:]
-        for attr in keys:
-            print(TBLUE + attr + ENDC, ":", TCYAN + self.info[attr] + ENDC)
-            time.sleep(.3)
+            pos=logo_pos["elementary"]
+        
+        art = equalizer(content[pos[0]:pos[1]])
+        print(art[0]+(" "*4)+TRED+self.info["Host"]+ENDC)
+        print(art[1]+(" "*5)+TCYAN+("-"*20)+ENDC)
+
+        height = max(len(art), len(self.info.keys()))
+        for i in range(2, height):
+            if i < len(art):
+                print(art[i]+ENDC+(" "*5), end="")
+            else:
+                print(" "*len(art[0])+(" "*5), end="")
+
+            if i < len(keys):
+                print(TBLUE + keys[i] + ENDC, ":", TCYAN +
+                      self.info[keys[i]] + ENDC, end="")
+            print()
+
         print("\n\n")
 
 
@@ -215,7 +220,8 @@ class Weather:
 
     def fetchweather(self):
         place = input("Enter location : ")
-        url = self.baseurl + place + "&appid=" + str(self.weatherapi) + "&units=metric"
+        url = self.baseurl + place + "&appid=" + \
+            str(self.weatherapi) + "&units=metric"
         res = requests.get(url)
         data = res.json()
         if data["cod"] == 200:
@@ -233,7 +239,8 @@ class Weather:
             time.sleep(.5)
             print(TPURPLE + "city : " + ENDC + str(city) + "," + str(country))
             time.sleep(.5)
-            print(TPURPLE + "Temperature : " + ENDC + str(temp), "degree celcius")
+            print(TPURPLE + "Temperature : " +
+                  ENDC + str(temp), "degree celcius")
             time.sleep(.5)
             print(TPURPLE + "Humidity : " + ENDC + str(hum), "%")
             time.sleep(.5)
@@ -263,9 +270,12 @@ def recognize_os(e=False):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-s", "--system", action="store_true", help="find your system info")
-    parser.add_argument("-e", "--extra", action="store_true", help="find extra system info")
-    parser.add_argument("-w", "--weather", action="store_true", help="Fetch weather report")
+    parser.add_argument("-s", "--system", action="store_true",
+                        help="find your system info")
+    parser.add_argument("-e", "--extra", action="store_true",
+                        help="find extra system info")
+    parser.add_argument("-w", "--weather", action="store_true",
+                        help="Fetch weather report")
     args = parser.parse_args()
     if args.system:
         recognize_os()
