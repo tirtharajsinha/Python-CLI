@@ -14,21 +14,43 @@ TBLUE = '\033[34;1m'
 ENDC = '\033[m'  # reset to the defaults
 
 time.sleep(1)
-microsoft = "" \
-            "                           __" \
-            "\n                       ,-~¨^  ^¨-,           _," \
-            "\n                      //////////// ;^-._...,¨/" \
-            "\n                     //////////// ///////////" \
-            "\n                    //////////// ///////////" \
-            "\n                   //////////// ///////////" \
-            "\n                  /,.-:''-,_ / ///////////" \
-            "\n                  _,.-:--._ ^ ^:-._ __../" \
-            "\n                //////////// /¨:.._¨__.;" \
-            "\n               //////////// ///////////" \
-            "\n              //////////// ///////////" \
-            "\n             //////////// ///////////" \
-            "\n            /_,.--:^-._/ ///////////" \
-            "\n           ^            ^¨¨-.___.:^               "
+microsoft = "            ,-~¨^  ^¨-,           _," \
+            "\n           //////////// ;^-._...,¨/ " \
+            "\n          //////////// ///////////  " \
+            "\n         //////////// ///////////   " \
+            "\n        //////////// ///////////    " \
+            "\n       /,.-:''-,_ / ///////////     " \
+            "\n       _,.-:--._ ^ ^:-._ __../      " \
+            "\n     //////////// /¨:.._¨__.;       " \
+            "\n    //////////// ///////////        " \
+            "\n   //////////// ///////////         " \
+            "\n  //////////// ///////////          " \
+            "\n /_,.--:^-._/ ///////////           " \
+            "\n^            ^¨¨-.___.:^            "
+
+elementary = "" \
+             "         eeeeeeeeeeeeeeeee           " \
+             "\n      eeeeeeeeeeeeeeeeeeeeeee      " \
+             "\n    eeeee  eeeeeeeeeeee   eeeee    " \
+             "\n  eeee   eeeee       eee     eeee  " \
+             "\n eeee   eeee          eee     eeee " \
+             "\neeee    eee            eee      eee" \
+             "\neee   eee            eee        eee" \
+             "\nee    eee           eeee       eeee" \
+             "\nee    eee         eeeee      eeeeee" \
+             "\nee    eee       eeeee      eeeee ee" \
+             "\neee   eeee   eeeeee      eeeee  eee" \
+             "\neee    eeeeeeeeee     eeeeee    eee" \
+             "\n eeeeeeeeeeeeeeeeeeeeeeee    eeeee " \
+             "\n  eeeeeeee eeeeeeeeeeee      eeee  " \
+             "\n    eeeee                 eeeee    " \
+             "\n      eeeeeee         eeeeeee      " \
+             "\n         eeeeeeeeeeeeeeeee         "
+
+f = open("ascii_art.txt", "r")
+content = f.readlines()
+win = content[1:14]
+ele = content[16:33]
 
 
 # traverse the info
@@ -48,18 +70,28 @@ class WinSystem:
         self.ignore = []
 
     def sysinfo(self):
-        if "Windows" in self.info[1]:
-            print(TCYAN + microsoft + ENDC)
+
         self.ignore = [4, 5, 7, 8, 9, 10, 11, 16, 17, 18, 19, 21, 25, 26, 27]
+        artcounter = 0
         for i in range(27):
+
             if i not in self.ignore:
                 data = self.info[i].split(":", 1)
-                print(TBLUE + data[0] + " : " + TGREEN + data[-1] + ENDC)
-                time.sleep(.3)
+                line = TBLUE + data[0] + " : " + TGREEN + data[-1] + ENDC
+                if artcounter < len(win):
+                    artl = win[artcounter].replace("#\n", " ")
+                    artline = TCYAN + (" " * 5) + artl + ENDC + (" " * 5)
+                    line = artline + line
+                    artcounter += 1
+                else:
+                    line = (" " * len(win[3])) + (" " * 5) + line
+                print(line)
 
     def sysinfo_extra(self):
+
         addmore = [25, 26, 27]
         self.sysinfo()
+        print(ENDC + "\n_________ More Info _________\n")
         for i in range(25, len(self.info)):
             if i in addmore:
                 data = self.info[i].split(":", 1)
@@ -81,6 +113,7 @@ class WinSystem:
                 else:
                     print(TCYAN + data[0].strip() + ENDC)
                 time.sleep(.3)
+        print("\n \n")
 
 
 class lnx_info:
@@ -106,9 +139,9 @@ class lnx_info:
         uptime = uptime.replace("min", "")
         uptime = uptime.strip()
         uptime = uptime.split(":")
-        up = uptime[-1]+" Min"
+        up = uptime[-1] + " Min"
         if len(uptime) > 1:
-            up = uptime[0]+" Hour, "+up
+            up = uptime[0] + " Hour, " + up
 
         infodic["Uptime"] = up
 
@@ -123,30 +156,30 @@ class lnx_info:
             ['bash', "--version"]).decode('utf-8').split("\n")[0]
         shell = shell.split("-", 1)[0]
         shell = shell.split(", ")
-        infodic["Shell"] = shell[0]+" V"+shell[1].split()[-1]
+        infodic["Shell"] = shell[0] + " V" + shell[1].split()[-1]
 
         try:
             result = os.statvfs('/')
             block_size = result.f_frsize
             total_blocks = result.f_blocks
             free_blocks = result.f_bfree
-            giga = 1000*1000*1000
-            total_size = total_blocks*block_size/giga
-            free_size = free_blocks*block_size/giga
-            used_size = total_size-free_size
+            giga = 1000 * 1000 * 1000
+            total_size = total_blocks * block_size / giga
+            free_size = free_blocks * block_size / giga
+            used_size = total_size - free_size
             infodic["Disk space"] = str(round(used_size, 2)) + \
-                " GiB /"+str(round(total_size, 2))+" GiB"
+                                    " GiB /" + str(round(total_size, 2)) + " GiB"
         except:
             pass
 
         cpu = subprocess.check_output(['lscpu']).decode('utf-8').split("\n")
         core = cpu[3].split(": ")[1].strip()
-        clock = float(cpu[15].split(": ")[1].strip())/1000
+        clock = float(cpu[15].split(": ")[1].strip()) / 1000
         for row in cpu:
             if "Model name" in row:
                 val = row.split(": ")
                 infodic["Processor"] = val[1].strip().split(
-                    "with")[0]+"(core "+core+") @ "+str(clock)+" GHz"
+                    "with")[0] + "(core " + core + ") @ " + str(clock) + " GHz"
                 break
 
         gpu = subprocess.check_output(['lspci']).decode('utf-8').split("\n")
@@ -164,13 +197,16 @@ class lnx_info:
         self.info = infodic
 
     def display(self):
-        print(("<"*7)+("-"*6)+(">"*7))
-        print(TPURPLE+self.info["host"]+ENDC+"\n"+("-"*20))
+        if "elementary" in self.info["OS"]:
+            print(TBLUE + elementary + ENDC, "\n")
+        print(("<" * 7) + ("-" * 6) + (">" * 7))
+        print(TPURPLE + self.info["host"] + ENDC + "\n" + ("-" * 20))
         keys = list(self.info.keys())[1:]
         for attr in keys:
-            print(TBLUE+attr+ENDC, ":", TCYAN+self.info[attr]+ENDC)
+            print(TBLUE + attr + ENDC, ":", TCYAN + self.info[attr] + ENDC)
             time.sleep(.3)
         print("\n\n")
+
 
 class Weather:
     def __init__(self):
@@ -218,7 +254,7 @@ def recognize_os(e=False):
         print("sorry currently this feature doesn't effective on any other system than Windows")
     elif platform == "win32":
         if e:
-           WinSystem().sysinfo_extra()
+            WinSystem().sysinfo_extra()
         else:
             WinSystem().sysinfo()
 
