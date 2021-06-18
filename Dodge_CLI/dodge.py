@@ -22,7 +22,8 @@ content = f.readlines()
 
 logo_pos={
     "win":[1,14],
-    "elementary":[16,33]
+    "elementary":[16,33],
+    "mint":[]
 }
 
 
@@ -193,13 +194,15 @@ class lnx_info:
         keys = list(self.info.keys())
         if "elementary" in self.info["OS"]:
             pos=logo_pos["elementary"]
+        elif "mint" in self.info["OS"].lower():
+            pos=logo_pos["mint"]
         
         art = equalizer(content[pos[0]:pos[1]])
         print(art[0]+(" "*4)+TRED+self.info["Host"]+ENDC)
-        print(art[1]+(" "*5)+TCYAN+("-"*20)+ENDC)
+        print(art[1]+(" "*4)+TCYAN+("-"*20)+ENDC)
 
         height = max(len(art), len(self.info.keys()))
-        for i in range(2, height):
+        for i in range(1, height):
             if i < len(art):
                 print(art[i]+ENDC+(" "*5), end="")
             else:
