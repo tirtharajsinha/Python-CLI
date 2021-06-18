@@ -14,26 +14,19 @@ TBLUE = '\033[34;1m'
 ENDC = '\033[m'  # reset to the defaults
 
 
-
-
-
-
-
-
 def equalizer(list):
-    ele=[]
+    ele = []
     for i in list:
-        i=i.replace("\n"," ")
+        i = i.replace("\n", " ")
         ele.append(i)
     maxart = len(max(ele, key=len))
 
     for i in range(len(ele)):
-        
-        if len(ele[i])<maxart:
-            ele[i]+=" "*(maxart-len(ele[i]))
-    
-    return ele
 
+        if len(ele[i]) < maxart:
+            ele[i] += " " * (maxart - len(ele[i]))
+
+    return ele
 
 
 # traverse the info
@@ -57,8 +50,8 @@ class WinSystem:
 
         self.ignore = [4, 5, 7, 8, 9, 10, 11, 16, 17, 18, 19, 21, 25, 26, 27]
         artcounter = 0
-        pos=logo_pos["win"]
-        win=content[pos[0]:pos[1]]
+        pos = logo_pos["win"]
+        win = content[pos[0]:pos[1]]
         for i in range(27):
 
             if i not in self.ignore:
@@ -154,7 +147,7 @@ class lnx_info:
             free_size = free_blocks * block_size / giga
             used_size = total_size - free_size
             infodic["Disk space"] = str(round(used_size, 2)) + \
-                " GiB /" + str(round(total_size, 2)) + " GiB"
+                                    " GiB /" + str(round(total_size, 2)) + " GiB"
         except:
             pass
 
@@ -185,21 +178,30 @@ class lnx_info:
     def display(self):
         print()
         keys = list(self.info.keys())
+        target = True
         if "elementary" in self.info["OS"]:
-            pos=logo_pos["elementary"]
+            pos = logo_pos["elementary"]
+            art = equalizer(content[pos[0]:pos[1]])
         elif "mint" in self.info["OS"].lower():
-            pos=logo_pos["mint"]
-        
-        art = equalizer(content[pos[0]:pos[1]])
-        print(art[0]+(" "*4)+TRED+self.info["Host"]+ENDC)
-        print(art[1]+(" "*4)+TCYAN+("-"*20)+ENDC)
+            pos = logo_pos["mint"]
+            mint = equalizer(content[pos[0]:pos[1]])
+            mint = "".join(mint)
+            mint = mint.replace("${c2}", "\033[32;1m")
+            mint = mint.replace("${c1}", "\033[m")
+            art = mint.split("/n")
+
+        else:
+            art = ["", ""]
+
+        print(art[0] + (" " * 4) + TRED + self.info["Host"] + ENDC)
+        print(art[1] + (" " * 4) + TCYAN + ("-" * 20) + ENDC)
 
         height = max(len(art), len(self.info.keys()))
         for i in range(1, height):
             if i < len(art):
-                print(art[i]+ENDC+(" "*5), end="")
+                print(art[i + 1] + ENDC + (" " * 5), end="")
             else:
-                print(" "*len(art[0])+(" "*5), end="")
+                print(" " * len(art[0]) + (" " * 5), end="")
 
             if i < len(keys):
                 print(TBLUE + keys[i] + ENDC, ":", TCYAN +
@@ -217,7 +219,7 @@ class Weather:
     def fetchweather(self):
         place = input("Enter location : ")
         url = self.baseurl + place + "&appid=" + \
-            str(self.weatherapi) + "&units=metric"
+              str(self.weatherapi) + "&units=metric"
         res = requests.get(url)
         data = res.json()
         if data["cod"] == 200:
@@ -273,14 +275,14 @@ if __name__ == "__main__":
     parser.add_argument("-w", "--weather", action="store_true",
                         help="Fetch weather report")
     args = parser.parse_args()
-    if args.system and args.extra:
+    if args.system or args.extra:
         f = open("ascii_art.txt", "r")
-    content = f.readlines()
+        content = f.readlines()
 
-    logo_pos={
-    "win":[1,14],
-    "elementary":[16,33],
-    "mint":[35,52]
+    logo_pos = {
+        "win": [1, 14],
+        "elementary": [16, 33],
+        "mint": [35, 52]
     }
     if args.system:
         recognize_os()
@@ -289,4 +291,4 @@ if __name__ == "__main__":
     elif args.weather:
         Weather().fetchweather()
     else:
-        print("No instruction found,\nTry 'cli.exe -h' for more info.")
+        print("No instruction found,\nTry 'dodge.exe -h' for more info.")
