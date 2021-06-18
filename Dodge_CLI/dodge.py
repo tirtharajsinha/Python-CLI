@@ -17,14 +17,7 @@ ENDC = '\033[m'  # reset to the defaults
 
 
 
-f = open("ascii_art.txt", "r")
-content = f.readlines()
 
-logo_pos={
-    "win":[1,14],
-    "elementary":[16,33],
-    "mint":[]
-}
 
 
 def equalizer(list):
@@ -280,6 +273,15 @@ if __name__ == "__main__":
     parser.add_argument("-w", "--weather", action="store_true",
                         help="Fetch weather report")
     args = parser.parse_args()
+    if args.system and args.extra:
+        f = open("ascii_art.txt", "r")
+    content = f.readlines()
+
+    logo_pos={
+    "win":[1,14],
+    "elementary":[16,33],
+    "mint":[35,52]
+    }
     if args.system:
         recognize_os()
     elif args.extra:
