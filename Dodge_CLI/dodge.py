@@ -152,7 +152,7 @@ class lnx_info:
             pass
 
         cpu = subprocess.check_output(['lscpu']).decode('utf-8').split("\n")
-        core = cpu[3].split(": ")[1].strip()
+        core = cpu[4].split(": ")[1].strip()
         clock = float(cpu[15].split(": ")[1].strip()) / 1000
         for row in cpu:
             if "Model name" in row:
@@ -179,26 +179,27 @@ class lnx_info:
         print()
         keys = list(self.info.keys())
         target = True
+        art=["",""]
         if "elementary" in self.info["OS"]:
             pos = logo_pos["elementary"]
             art = equalizer(content[pos[0]:pos[1]])
         elif "mint" in self.info["OS"].lower():
             pos = logo_pos["mint"]
             mint = equalizer(content[pos[0]:pos[1]])
-            mint = "".join(mint)
+            mint = "\n".join(mint)
             mint = mint.replace("${c2}", "\033[32;1m")
             mint = mint.replace("${c1}", "\033[m")
-            art = mint.split("/n")
+            art = mint.split("\n")
+            
 
-        else:
-            art = ["", ""]
+        
 
-        print(art[0] + (" " * 4) + TRED + self.info["Host"] + ENDC)
-        print(art[1] + (" " * 4) + TCYAN + ("-" * 20) + ENDC)
+        print(art[0] + TRED + self.info["Host"] + ENDC)
+        print(art[1] + TCYAN + ("-" * 20) + ENDC)
 
         height = max(len(art), len(self.info.keys()))
         for i in range(1, height):
-            if i < len(art):
+            if i < len(art)-1:
                 print(art[i + 1] + ENDC + (" " * 5), end="")
             else:
                 print(" " * len(art[0]) + (" " * 5), end="")
