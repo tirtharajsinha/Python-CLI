@@ -215,7 +215,7 @@ class lnx_info:
 class Weather:
     def __init__(self):
         self.baseurl = "http://api.openweathermap.org/data/2.5/weather?q="
-        self.weatherapi = "8e44efb0ae84f237a5d93f5f4d629433"
+        self.weatherapi = "place api id"
 
     def fetchweather(self):
         place = input("Enter location : ")
